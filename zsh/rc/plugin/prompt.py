@@ -187,12 +187,15 @@ def add_git_segment(powerline, cwd):
     if 'ot a git repo' in err.decode(encoding):
         return False
 
+    if 'fatal: unsafe repositor' in err.decode(encoding):
+        return False
+
     if out:
         branch = out[len('refs/heads/'):].rstrip()
+        branch = branch.decode(encoding)
     else:
         branch = '(Detached)'
 
-    branch = branch.decode(encoding)
     has_pending_commits, has_untracked_files, origin_position = get_git_status()
     branch += origin_position
     if has_untracked_files:
