@@ -130,7 +130,7 @@ do
       break
       ;;
     -*)
-      msg error "${scriptname}: illegal option -- '$(printf ${1} | sed 's/^-*//')'" 1>&2
+      msg error "${scriptname}: illegal option -- '$(echo ${1} | sed 's/^-*//')'" 1>&2
       usage
       exit 1
       ;;
