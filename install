@@ -255,7 +255,7 @@ setconf ()
 ## MAIN ########################################################
 
 if [[ ! "${OSTYPE}" =~ 'linux' ]]; then
-  msg error "Your environment is ${OSTYPE}. This script can run only on linux."
+  msg error "Your environment is ${OSTYPE}. This script can only be run on linux."
   msg input "exit."
   return 2>&- || exit
 fi
@@ -285,9 +285,9 @@ fi
 
 for f in ${flag[@]}
 do
-  msg msg "start initial settings of ${f}"
+  msg msg "start initial setup for ${f}"
   setconf ${f}
-  msg msg "end initial settings of ${f}"
+  msg msg "initia setup for ${f} is complete"
 done
 
 msg em "all done."
