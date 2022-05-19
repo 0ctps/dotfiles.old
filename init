@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -Ceuo pipefail
+trap exit ERR
+
+sudo apt update
+sudo apt -y install vim zsh git tmux cmake build-essential
+mkdir -p ~/.ssh
+ssh-keygen -t ed25519 -N "" -f ~/.ssh/g
+cat << EOF >> ~/.ssh/config
+host github github.com
+  Hostname github.com
+  IdentityFile ~/.ssh/g
+  User git
+EOF
+echo -n "public key for github: "
+cat ~/.ssh/g.pub
+read -p "Go to < https://github.com/settings/ssh/new > and register your public key."
+ssh github
