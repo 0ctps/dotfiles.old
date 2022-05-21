@@ -4,9 +4,11 @@ Installation
 -------------------
 
 ```bash
+$ ./init
 $ ./install
 ```
 ```bash
+$ ./init
 $ ./install --vim --zsh --tmux
 ```
 
