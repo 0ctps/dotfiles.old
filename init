@@ -18,15 +18,23 @@ if ! type vim zsh git tmux cmake >/dev/null 2>&1;then
   fi
 fi
 
-mkdir -p ~/.ssh
-ssh-keygen -t ed25519 -N "" -f ~/.ssh/g
-cat << EOF >> ~/.ssh/config
+if [ ! -d ~/.ssh ];then
+  mkdir -p ~/.ssh
+fi
+if [ ! -f ~/.ssh/g ];then
+  ssh-keygen -t ed25519 -N "" -f ~/.ssh/g
+  cat << EOF >> ~/.ssh/config
 host github github.com
   Hostname github.com
   IdentityFile ~/.ssh/g
   User git
 EOF
-echo -n "public key for github: "
-cat ~/.ssh/g.pub
-read -p "Go to < https://github.com/settings/ssh/new > and register your public key."
-ssh github
+  echo -n "public key for github: "
+  cat ~/.ssh/g.pub
+  read -p "Go to < https://github.com/settings/ssh/new > and register your public key."
+  ssh github
+else
+  echo skip.
+  exit 1
+fi
+
