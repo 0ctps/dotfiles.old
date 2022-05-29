@@ -7,20 +7,22 @@ if ! type vim zsh git tmux cmake >/dev/null 2>&1;then
   if type apt >/dev/null 2>&1; then
     sudo apt update
     sudo apt -y install vim zsh git tmux cmake build-essential
-  else if type yum >/dev/null 2>&1; then
-    sudo yum -y groupinstall "Development Tools"
-    sudo yum -y install vim zsh git tmux cmake kernel-devel kernel-headers
   else
-    echo "Your computer does not have Package Managers 'apt' or 'yum' installed.
-    Please install the following packages manually and then re-run with the N option"
-    echo "Packages: vim, zsh, git, tmux, cmake, build-essential"
-    exit 1
+    if type yum >/dev/null 2>&1; then
+      sudo yum -y groupinstall "Development Tools"
+      sudo yum -y install vim zsh git tmux cmake kernel-devel kernel-headers
+    else
+      echo "Your computer does not have Package Managers 'apt' or 'yum' installed. Please install the following packages manually and then re-run with the N option"
+      echo "Packages: vim, zsh, git, tmux, cmake, build-essential"
+      exit 1
+    fi
   fi
 fi
 
 if [ ! -d ~/.ssh ];then
   mkdir -p ~/.ssh
 fi
+
 if [ ! -f ~/.ssh/g ];then
   ssh-keygen -t ed25519 -N "" -f ~/.ssh/g
   cat << EOF >> ~/.ssh/config
@@ -37,4 +39,3 @@ else
   echo skip.
   exit 1
 fi
-
