@@ -6,15 +6,19 @@ trap exit ERR
 if ! type vim zsh git tmux cmake >/dev/null 2>&1;then
   if type apt >/dev/null 2>&1; then
     sudo apt update
-    sudo apt -y install vim zsh git tmux cmake build-essential
+    sudo apt -y install vim zsh git tmux cmake build-essential avahi-daemon
+    sudo systemctl start avahi-daemon
+    sudo systemctl enable avahi-daemon
   else
     if type yum >/dev/null 2>&1; then
       sudo yum -y groupinstall "Development Tools"
-      sudo yum -y install vim zsh git tmux cmake kernel-devel kernel-headers
+      sudo yum -y install vim zsh git tmux cmake kernel-devel kernel-headers avahi
+      sudo systemctl start avahi-daemon
+      sudo systemctl enable avahi-daemon
     else
       echo "Your computer does not have Package Managers 'apt' or 'yum' installed. Please install the following packages manually and then re-run with the N option"
       echo "Packages: vim, zsh, git, tmux, cmake, build-essential"
-      exit 1
+      return 2>&- || exit
     fi
   fi
 fi
@@ -37,5 +41,5 @@ EOF
   ssh github
 else
   echo skip.
-  exit 1
+  return 2>&- || exit
 fi
