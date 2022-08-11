@@ -207,7 +207,7 @@ setconf ()
         if [ ${#filename[@]} = ${#linkname[@]} ]; then
           for n in ${filename[@]}
           do
-            filepath+=("${workdir}/${dirname}/${n}")
+            filepath+=("${dothome}/${dirname}/${n}")
           done
           for n in ${linkname[@]}
           do
@@ -225,8 +225,8 @@ setconf ()
                 msg input "skip."
                 continue
               else
-                cd ${workdir}/${dirname}/vendor/tmux-mem-cpu-load && cmake . && make && sudo make install
-                cd ${workdir}
+                cd ${dothome}/${dirname}/vendor/tmux-mem-cpu-load && cmake . && make && sudo make install
+                cd ${dothome}
                 msg msg "done."
               fi
             else
@@ -266,9 +266,13 @@ if ! type git >/dev/null 2>&1; then
   return 2>&- || exit
 fi
 
+if [ ! -e ${dothome} ]; then
+  cp -r ${workdir} ${dothome}
+fi
+
 if [ ! -e ${HOME}/.gitconfig ]; then
   result=0
-  cp ${workdir}/.gitconfig ${HOME}/.gitconfig 2>&1 > /dev/null || result=$?
+  cp ${dothome}/.gitconfig ${HOME}/.gitconfig 2>&1 > /dev/null || result=$?
   if [[ ! ${result} -eq 0 ]]; then
     msg error "'.gitconfig' is NOT found on your computer."
     msg input "exit."
@@ -278,10 +282,6 @@ fi
 
 msg em "start script: ${scriptname}"
 
-if [ ! -e ${workdir} ]; then
-  cp -r ${workdir} ${dothome}
-  ${workdir} = ${dothome}
-fi
 
 for f in ${flag[@]}
 do
