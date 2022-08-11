@@ -4,12 +4,12 @@ Installation
 -------------------
 
 ```bash
-$ ./init
-$ ./install
+$ bash ./01_init
+$ bash ./02_install
 ```
 ```bash
-$ ./init
-$ ./install --vim --zsh --tmux
+$ bash ./01_init
+$ bash ./02_install --vim --zsh --tmux
 ```
 
 Supported types
