@@ -3,6 +3,18 @@
 set -Ceuo pipefail
 trap exit ERR
 
+if [[ ! "${OSTYPE}" =~ 'linux' ]]; then
+  msg error "Your environment is ${OSTYPE}. This script can only be run on linux."
+  msg input "exit."
+  return 2>&- || exit
+fi
+
+if ! type git >/dev/null 2>&1; then
+  msg error "'git' is NOT installed on your computer."
+  msg input "exit."
+  return 2>&- || exit
+fi
+
 declare -r scriptname=$(basename ${0})
 declare -r version="4.2.0"
 
@@ -200,7 +212,7 @@ setconf ()
           mkdir -p ${dirpath}
           msg success "mkdir ${dirpath}"
         else
-          msg failed "${dirpath} is already exist. [directory]"
+          msg " skip" "${dirpath} is already exist. [directory]"
         fi
       ;;
       link)
@@ -237,7 +249,7 @@ setconf ()
             ln -s ${filepath[${i}]} ${linkpath[$i]}
             msg success "link ${filepath[${i}]} -> ${linkpath[${i}]}"
           else
-            msg failed "${linkpath[$i]} is already exist. [symbolic link]"
+            msg " skip" "${linkpath[$i]} is already exist. [symbolic link]"
           fi
         done
         unset filepath linkpath
@@ -253,18 +265,6 @@ setconf ()
 
 
 ## MAIN ########################################################
-
-if [[ ! "${OSTYPE}" =~ 'linux' ]]; then
-  msg error "Your environment is ${OSTYPE}. This script can only be run on linux."
-  msg input "exit."
-  return 2>&- || exit
-fi
-
-if ! type git >/dev/null 2>&1; then
-  msg error "'git' is NOT installed on your computer."
-  msg input "exit."
-  return 2>&- || exit
-fi
 
 if [ ! -e ${dothome} ]; then
   cp -r ${workdir} ${dothome}
