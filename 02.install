@@ -77,13 +77,13 @@ msg()
 ## CHECK #######################################################
 
 if [[ ! "${OSTYPE}" =~ 'linux' ]]; then
-  msg error "Your environment is ${OSTYPE}. This script can only be run on linux."
+  msg error "This script is designed to run on Linux. Your current operating system appears to be ${OSTYPE}. Please use a Linux environment to run this script."
   msg input "exit."
   return 2>&- || exit
 fi
 
 if ! type git >/dev/null 2>&1; then
-  msg error "'git' is NOT installed on your computer."
+  msg error "'git' is NOT installed on your computer. Please install it to continue."
   msg input "exit."
   return 2>&- || exit
 fi
@@ -93,11 +93,11 @@ fi
 usage() {
   msg usage "./${scriptname} [options]"
   cat << EOF
-    --help | -h | --usage : Show this message
+    --help | -h | --usage : Display this message
     --version | -v        : Show version of this program
-    --all                 : Install dotfiles of ssh, submodule, tmux, vim and zsh
-    --ssh                 : Install ssh's configuration files 
-    --submodule           : Execute only settings related to submodules
+    --all                 : Install dotfiles for SSH, submodule, tmux, vim and zsh
+    --ssh                 : Install SSH configuration files
+    --submodule           : Execute settings related to submodules only
     --tmux                : Install tmux's dotfiles
     --vim                 : Install vim's dotfiles
     --zsh                 : Install zsh's dotfiles
@@ -160,8 +160,8 @@ done
 
 flag+=("")
 if [ -z ${flag} ]; then
-  msg warn "installation target is not specified"
-  msg msg "install with a recommended configuration"
+  msg warn "Installation target has not been specified."
+  msg msg "Proceeding with the installation using a recommended configuration."
   flag+=("ssh" "vim" "zsh")
 fi
 
@@ -233,11 +233,11 @@ setconf ()
         for ((i=0;${i}<=${#filepath[@]}-1;i++))
         do
           if [ ${1} = "tmux" ]; then
-            msg msg "compile tmux plugin"
+            msg msg "Compile tmux plugin"
             if [ ! -e ${HOME}/${filename} ]; then
-              msg msg "installing tmux-config..."
+              msg msg "Installing tmux-config..."
               if ! type cmake >/dev/null 2>&1; then
-                msg error "'cmake' is NOT installed on your computer.\nPlease execute something similar to the following command\nsudo apt install cmake build-essential"
+                msg error "'cmake' is NOT installed on your system.\nTo install it, you might want to execute a command similar to the following:\nsudo apt install cmake build-essential"
                 msg input "skip."
                 continue
               else
@@ -284,16 +284,16 @@ if [ ! -e ${HOME}/.gitconfig ]; then
   fi
 fi
 
-msg em "start script: ${scriptname}"
+msg em "Start script: ${scriptname}"
 
 
 for f in ${flag[@]}
 do
-  msg msg "start initial setup for ${f}"
+  msg msg "Start initial setup for ${f}."
   setconf ${f}
-  msg msg "initial setup for ${f} is complete"
+  msg msg "Initial setup for ${f} has been completed."
 done
 
-msg em "all done."
+msg em "Process completed successfully."
 
 ################################################################
