@@ -304,10 +304,6 @@ zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 
 alias ls='ls -F --color=auto --group-directories-first'
 
-function cd() {
-  builtin cd $@ && ls;
-}
-
 # ]]
 # * «« -------------------------------------------------/
 
@@ -418,10 +414,7 @@ case ${OSTYPE} in #uname http://en.wikipedia.org/wiki/Uname
     fi ;;
   # mac os
   darwin*)
-    alias ls='ls -G -F -L'
-    function cd() {
-      builtin cd $@ && ls;
-    } ;;
+    alias ls='ls -G -F -L' ;;
   #windows
   CYGWIN*) ;;
   msys*)
@@ -435,6 +428,10 @@ case ${OSTYPE} in #uname http://en.wikipedia.org/wiki/Uname
 esac
 
 # ]
+
+function cd() {
+  builtin cd $@ && ls;
+}
 
 
 
