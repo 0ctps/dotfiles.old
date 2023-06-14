@@ -76,7 +76,7 @@ msg()
 
 ## CHECK #######################################################
 
-if [[ ! "${OSTYPE}" =~ 'linux' ]]; then
+if [[ ! "${OSTYPE}" =~ 'linux' ]] && [[ ! "${OSTYPE}" =~ 'darwin' ]]; then
   msg error "This script is designed to run on Linux. Your current operating system appears to be ${OSTYPE}. Please use a Linux environment to run this script."
   msg input "exit."
   return 2>&- || exit
