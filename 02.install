@@ -3,18 +3,6 @@
 set -Ceuo pipefail
 trap exit ERR
 
-if [[ ! "${OSTYPE}" =~ 'linux' ]]; then
-  msg error "Your environment is ${OSTYPE}. This script can only be run on linux."
-  msg input "exit."
-  return 2>&- || exit
-fi
-
-if ! type git >/dev/null 2>&1; then
-  msg error "'git' is NOT installed on your computer."
-  msg input "exit."
-  return 2>&- || exit
-fi
-
 declare -r scriptname=$(basename ${0})
 declare -r version="4.2.0"
 
@@ -85,6 +73,22 @@ msg()
     printf "${header}${@}${footer}"
   fi
 }
+
+## CHECK #######################################################
+
+if [[ ! "${OSTYPE}" =~ 'linux' ]]; then
+  msg error "Your environment is ${OSTYPE}. This script can only be run on linux."
+  msg input "exit."
+  return 2>&- || exit
+fi
+
+if ! type git >/dev/null 2>&1; then
+  msg error "'git' is NOT installed on your computer."
+  msg input "exit."
+  return 2>&- || exit
+fi
+
+################################################################
 
 usage() {
   msg usage "./${scriptname} [options]"
