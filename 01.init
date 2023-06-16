@@ -16,9 +16,15 @@ if ! type vim zsh git tmux cmake >/dev/null 2>&1;then
       sudo systemctl start avahi-daemon
       sudo systemctl enable avahi-daemon
     else
-      echo "Your computer does not have Package Managers 'apt' or 'yum' installed. Please install the following packages manually and then re-run with the N option"
-      echo "Packages: vim, zsh, git, tmux, cmake, build-essential"
-      return 2>&- || exit
+      if type pacman >/dev/null 2>&1; then
+        sudo pacman -Sy vim zsh git tmux cmake base-devel avahi
+	sudo systemctl start avahi-daemon
+	sudo systemctl enable avahi-daemon
+      else
+        echo "Your computer does not have Package Managers 'apt' or 'yum' installed. Please install the following packages manually and then re-run with the N option"
+        echo "Packages: vim, zsh, git, tmux, cmake, build-essential"
+        return 2>&- || exit
+      fi
     fi
   fi
 fi
