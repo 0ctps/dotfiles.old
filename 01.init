@@ -6,18 +6,18 @@ trap exit ERR
 if ! type vim zsh git tmux cmake >/dev/null 2>&1;then
   if type apt >/dev/null 2>&1; then
     sudo apt update
-    sudo apt -y install vim zsh git tmux cmake build-essential avahi-daemon
+    sudo apt -y install vim zsh git tmux cmake build-essential avahi-daemon fzf
     sudo systemctl start avahi-daemon
     sudo systemctl enable avahi-daemon
   else
     if type yum >/dev/null 2>&1; then
       sudo yum -y groupinstall "Development Tools"
-      sudo yum -y install vim zsh git tmux cmake kernel-devel kernel-headers avahi
+      sudo yum -y install vim zsh git tmux cmake kernel-devel kernel-headers avahi fzf
       sudo systemctl start avahi-daemon
       sudo systemctl enable avahi-daemon
     else
       if type pacman >/dev/null 2>&1; then
-        sudo pacman -Sy vim zsh git tmux cmake base-devel avahi
+        sudo pacman -Sy vim zsh git tmux cmake base-devel avahi fzf
 	sudo systemctl start avahi-daemon
 	sudo systemctl enable avahi-daemon
       else
