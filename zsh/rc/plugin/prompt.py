@@ -21,15 +21,16 @@ class Color:
     # The following link is a pretty good resources for color values:
     # http://www.calmar.ws/vim/color-output.png
 
-    PATH_BG = 237       # dark grey
-    PATH_FG = 250       # light grey
-    CWD_FG = 254        # nearly-white grey
+    PATH_BG_NORMAL = 237 # dark grey
+    PATH_BG_ROOT = 161   # pink/red
+    PATH_FG = 250        # light grey
+    CWD_FG = 254         # nearly-white grey
     SEPARATOR_FG = 244
 
-    REPO_CLEAN_BG = 148 # a light green color
-    REPO_CLEAN_FG = 0   # black
-    REPO_DIRTY_BG = 161 # pink/red
-    REPO_DIRTY_FG = 15  # white
+    REPO_CLEAN_BG = 148  # a light green color
+    REPO_CLEAN_FG = 0    # black
+    REPO_DIRTY_BG = 161  # pink/red
+    REPO_DIRTY_FG = 15   # white
 
     CMD_PASSED_BG = 31
     CMD_PASSED_FG = 15
@@ -112,14 +113,19 @@ def add_cwd_segment(powerline, cwd, maxdepth, cwd_only=False):
     if cwd[0] == '/':
         cwd = cwd[1:]
 
+    if os.geteuid() == 0:
+        bg=Color.PATH_BG_ROOT
+    else:
+        bg=Color.PATH_BG_NORMAL
+
     names = cwd.split('/')
     if len(names) > maxdepth:
         names = names[:2] + ['- '] + names[2 - maxdepth:]
 
     if not cwd_only:
         for n in names[:-1]:
-            powerline.append(Segment(powerline, ' %s ' % n, Color.PATH_FG, Color.PATH_BG, powerline.separator_thin, Color.SEPARATOR_FG))
-    powerline.append(Segment(powerline, ' %s ' % names[-1], Color.CWD_FG, Color.PATH_BG))
+            powerline.append(Segment(powerline, ' %s ' % n, Color.PATH_FG, bg, powerline.separator_thin, Color.SEPARATOR_FG))
+    powerline.append(Segment(powerline, ' %s ' % names[-1], Color.CWD_FG, bg))
 
 
 def get_hg_status():
