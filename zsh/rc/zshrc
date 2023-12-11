@@ -46,15 +46,15 @@ alias history='history -E'
 
 # ref. https://rcmdnk.com/blog/2017/10/13/computer-bash-zsh
 function source_file {
-  if [ $# -lt 1 ];then
+  if [ $# -lt 1 ]; then
     echo "ERROR!!! source_file is called w/o an argument"
     return
   fi
-  arg="$1"
-  shift
-  if [ -r "$arg" ]; then
-    . "$arg"
-  fi
+  for arg in "$@"; do
+    if [ -r "$arg" ]; then
+      . "$arg"
+    fi
+  done
 }
 # end
 
