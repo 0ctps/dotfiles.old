@@ -74,7 +74,7 @@ msg()
   fi
 }
 
-## CHECK #######################################################
+## CHECK OSTYPE ################################################
 
 if [[ ! "${OSTYPE}" =~ 'linux' ]] && [[ ! "${OSTYPE}" =~ 'darwin' ]]; then
   msg error "This script is designed to run on Linux. Your current operating system appears to be ${OSTYPE}. Please use a Linux environment to run this script."
@@ -95,9 +95,8 @@ usage() {
   cat << EOF
     --help | -h | --usage : Display this message
     --version | -v        : Show version of this program
-    --all                 : Install dotfiles for SSH, submodule, tmux, vim and zsh
-    --ssh                 : Install SSH configuration files
-    --submodule           : Execute settings related to submodules only
+    --all                 : Install dotfiles for ssh, tmux, vim and zsh
+    --ssh                 : Install ssh configuration files
     --tmux                : Install tmux's dotfiles
     --vim                 : Install vim's dotfiles
     --zsh                 : Install zsh's dotfiles
@@ -117,15 +116,11 @@ do
       exit 0
       ;;
     '-a'|'--all')
-      flag+=("ssh" "submodule" "tmux" "vim" "zsh")
+      flag+=("ssh" "tmux" "vim" "zsh")
       shift 1
       ;;
     '--ssh')
       flag+=("ssh")
-      shift 1
-      ;;
-    '--submodule')
-      flag+=("submodule")
       shift 1
       ;;
     '--tmux')
@@ -192,12 +187,6 @@ setconf ()
       local -a filename=("tmux.conf")
       local -a linkname=(".tmux.conf")
       local -a option=("link")
-      ;;
-    submodule)
-      msg msg "init submodule"
-      cd ${workdir} && git submodule init && git submodule update
-      cd ${workdir}/tmux && git submodule init && git submodule update
-      return
       ;;
     *)
       return 0
