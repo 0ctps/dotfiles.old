@@ -93,13 +93,13 @@ fi
 usage() {
   msg usage "./${scriptname} [options]"
   cat << EOF
-    --help | -h | --usage : Display this message
-    --version | -v        : Show version of this program
-    --all                 : Install dotfiles for ssh, tmux, vim and zsh
-    --ssh                 : Install ssh configuration files
-    --tmux                : Install tmux's dotfiles
-    --vim                 : Install vim's dotfiles
-    --zsh                 : Install zsh's dotfiles
+    help    | --help    | -h | --usage : Display this message
+    version | --version | -v           : Show version of this program
+    all     | --all                    : Install dotfiles for ssh, tmux, vim and zsh
+    ssh     | --ssh                    : Install ssh configuration files
+    tmux    | --tmux                   : Install tmux's dotfiles
+    vim     | --vim                    : Install vim's dotfiles
+    zsh     | --zsh                    : Install zsh's dotfiles
 EOF
 }
 
@@ -107,31 +107,31 @@ EOF
 for opt in ${@}
 do
   case ${opt} in
-    '-h'|'--help'|'--usage')
+    '-h'|'--help'|'--usage'|'help')
       usage
       exit 0
       ;;
-    '-v'|'--version')
+    '-v'|'--version'|'version')
       msg version ${version}
       exit 0
       ;;
-    '-a'|'--all')
+    '-a'|'--all'|'all')
       flag+=("ssh" "tmux" "vim" "zsh")
       shift 1
       ;;
-    '--ssh')
+    '--ssh'|'ssh')
       flag+=("ssh")
       shift 1
       ;;
-    '--tmux')
+    '--tmux'|'tmux')
       flag+=("tmux")
       shift 1
       ;;
-    '--vim')
+    '--vim'|'vim')
       flag+=("vim")
       shift 1
       ;;
-    '--zsh')
+    '--zsh'|'zsh')
       flag+=("zsh")
       shift 1
       ;;
