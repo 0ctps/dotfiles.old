@@ -74,6 +74,7 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 setopt correct
 setopt extended_glob
 unsetopt caseglob
+unsetopt nomatch
 autoload predict-on
 fpath=($ZDOTDIR/rc/completion $fpath)
 
