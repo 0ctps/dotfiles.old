@@ -86,6 +86,7 @@ fpath=($ZDOTDIR/rc/completion $fpath)
 # * »»  history ----------------------------------------/
 # [[
 
+# ref. https://unix.stackexchange.com/questions/273861/unlimited-history-in-zsh
 HISTFILE=$HOME/.zsh_history
 HISTSIZE=10000000
 SAVEHIST=10000000
