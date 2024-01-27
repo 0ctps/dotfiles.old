@@ -335,17 +335,19 @@ if [[ $TERM = xterm* ]];then
   local BLUE=31
   local RED=161
 
-  local BACKGROUND=${DARKGRAY}
-  local FOREGROUND=${WHITE}
-  local COLOR="%F{${FOREGROUND}}%K{${BACKGROUND}}"
-  local PROMPTBODY="${COLOR} %~ ${COLOR}%F{${WHITE}}%(?.%K{${BLUE}}.%K{${RED}}) * %f%k "
-
   case ${UID} in
     0) #root
+      local BACKGROUND=${RED}
+      local FOREGROUND=${WHITE}
       local UCOLOR=${RED};;
     *)
+      local BACKGROUND=${DARKGRAY}
+      local FOREGROUND=${WHITE}
       local UCOLOR=${BLUE};;
   esac
+
+  local COLOR="%F{${FOREGROUND}}%K{${BACKGROUND}}"
+  local PROMPTBODY="${COLOR} %~ ${COLOR}%F{${WHITE}}%(?.%K{${BLUE}}.%K{${RED}}) * %f%k "
 
   PROMPT=${PROMPTBODY}
   RPROMPT="%F{${FOREGROUND}}%K{${UCOLOR}} %n %F{${GREEN}}%K{${BACKGROUND}} %m ${COLOR}|${COLOR} %w ${COLOR}|${COLOR} %* %f%k"
