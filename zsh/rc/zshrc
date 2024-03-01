@@ -17,7 +17,7 @@
 #                                        |___|
 
 #       * author    : 0ctpus
-#       * ver       : 3.40
+#       * ver       : 3.41
 
 
 
@@ -161,7 +161,13 @@ if (( $+commands[fzf] )); then
   }
 
   fh() {
-    eval $(([ -n "$ZSH_NAME" ] && fc -l 1 || history) | fzf +s | sed 's/ *[0-9]* *//')
+    selected_command=$(([ -n "$ZSH_NAME" ] && fc -l 1 || history) | fzf +s | sed 's/ *[0-9]* *//')
+    if [ -n "$ZSH_NAME" ]; then
+      print -s "$selected_command"
+    else
+      history -s "$selected_command"
+    fi
+    eval "$selected_command"
   }
 
   fkill() {
