@@ -16,8 +16,8 @@
 #               /_/     /__|___/_||_|     ___
 #                                        |___|
 
-#       * auther    : k0k1
-#       * ver       : 0.11
+#       * auther    : 0
+#       * ver       : 1.00
 
 
 if [ -e $ZDOTDIR/rc/zshrc ]; then
