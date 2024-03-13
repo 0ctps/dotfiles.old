@@ -17,7 +17,7 @@
 #                                        |___|
 
 #       * author    : 0
-#       * ver       : 3.41
+#       * ver       : 3.50
 
 
 
@@ -335,9 +335,33 @@ PROMPT="[%~]%(!,#,$) "
 RPROMPT="[%n|%m|%w|%*]"
 SPROMPT="%r is correct [n,y,a,e]: "
 
+get_formatted_directory_path() {
+    local current_dir=$PWD
+    local home_dir=$HOME
+    local delimiter=" | "
+    if [[ "$current_dir" = "$home_dir" ]]; then
+        echo "~"
+        return
+    fi
+    if [[ "$current_dir" = "$home_dir"* ]]; then
+        current_dir="~${current_dir:${#home_dir}}"
+    fi
+    local dir_array=("${(s:/:)current_dir}")
+    dir_array=(${dir_array:#})
+    if [ ${#dir_array[@]} -le 5 ]; then
+        local output="${dir_array[1]}"
+        for i in {2..${#dir_array}}; do
+            output="${output}${delimiter}${dir_array[$i]}"
+        done
+    else
+        output="${dir_array[1]}${delimiter}${dir_array[2]}${delimiter}-${delimiter}${dir_array[-3]}${delimiter}${dir_array[-2]}${delimiter}${dir_array[-1]}"
+    fi
+    echo "$output"
+}
+
 if [[ $TERM = xterm* ]];then
   local DARKGRAY=237
-  local WHITE=15
+  local WHITE=250
   local GREEN=47
   local BLUE=31
   local RED=161
@@ -359,19 +383,18 @@ if [[ $TERM = xterm* ]];then
   PROMPT=${PROMPTBODY}
   RPROMPT="%F{${FOREGROUND}}%K{${UCOLOR}} %n %F{${GREEN}}%K{${BACKGROUND}} %m ${COLOR}|${COLOR} %w ${COLOR}|${COLOR} %* %f%k"
 
-  if (( $+commands[python] || $+commands[python3] )); then
-    if [[ ! -f ${HOME}/.zsh.lowspec && -e $ZDOTDIR/rc/plugin/prompt.py ]]; then
-      function u_prompt() {
+  if [[ ! -f ${HOME}/.zsh.lowspec ]]; then
+    function u_prompt() {
+      if [[ ( $+commands[python] || $+commands[python3] )  && -e $ZDOTDIR/rc/plugin/prompt.py ]]; then
         local RETURN=$?
-        if [ -e $ZDOTDIR/rc/plugin/prompt.py ]; then
-          PROMPT="$(~/.zsh/rc/plugin/prompt.py ${RETURN})"
-        else
-          PROMPT=${PROMPTBODY}
-        fi
-      }
-      precmd() { u_prompt }
-    fi
+        PROMPT="$(~/.zsh/rc/plugin/prompt.py ${RETURN})"
+      else
+        local PROMPTBODY="${COLOR} "$(get_formatted_directory_path)" ${COLOR}%F{${WHITE}}%(?.%K{${BLUE}}.%K{${RED}}) * %f%k "
+        PROMPT=${PROMPTBODY}
+      fi
+    }
   fi
+  precmd() { u_prompt }
 fi
 
 
