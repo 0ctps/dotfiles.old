@@ -389,7 +389,7 @@ if [[ $TERM = xterm* ]];then
       local RETURN=$?
       PROMPT="$(~/.zsh/rc/plugin/prompt.py ${RETURN})"
     else
-      local PROMPTBODY="${COLOR} "$(get_formatted_directory_path)" ${COLOR}%F{${DARKWHITE}}%(?.%K{${BLUE}}.%K{${RED}}) * %f%k "
+      local PROMPTBODY="${COLOR} "$(get_formatted_directory_path)" ${COLOR}%F{${WHITE}}%(?.%K{${BLUE}}.%K{${RED}}) * %f%k "
       PROMPT=${PROMPTBODY}
     fi
   }
