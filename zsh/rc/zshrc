@@ -361,7 +361,8 @@ get_formatted_directory_path() {
 
 if [[ $TERM = xterm* ]];then
   local DARKGRAY=237
-  local WHITE=250
+  local DARKWHITE=250
+  local WHITE=15
   local GREEN=47
   local BLUE=31
   local RED=161
@@ -378,7 +379,7 @@ if [[ $TERM = xterm* ]];then
   esac
 
   local COLOR="%F{${FOREGROUND}}%K{${BACKGROUND}}"
-  local PROMPTBODY="${COLOR} %~ ${COLOR}%F{${WHITE}}%(?.%K{${BLUE}}.%K{${RED}}) * %f%k "
+  local PROMPTBODY="${COLOR} %~ ${COLOR}%F{${DARKWHITE}}%(?.%K{${BLUE}}.%K{${RED}}) * %f%k "
 
   PROMPT=${PROMPTBODY}
   RPROMPT="%F{${FOREGROUND}}%K{${UCOLOR}} %n %F{${GREEN}}%K{${BACKGROUND}} %m ${COLOR}|${COLOR} %w ${COLOR}|${COLOR} %* %f%k"
@@ -389,7 +390,7 @@ if [[ $TERM = xterm* ]];then
         local RETURN=$?
         PROMPT="$(~/.zsh/rc/plugin/prompt.py ${RETURN})"
       else
-        local PROMPTBODY="${COLOR} "$(get_formatted_directory_path)" ${COLOR}%F{${WHITE}}%(?.%K{${BLUE}}.%K{${RED}}) * %f%k "
+        local PROMPTBODY="${COLOR} "$(get_formatted_directory_path)" ${COLOR}%F{${DARKWHITE}}%(?.%K{${BLUE}}.%K{${RED}}) * %f%k "
         PROMPT=${PROMPTBODY}
       fi
     }
