@@ -418,7 +418,7 @@ if [[ $TERM = xterm* ]];then
         indicator="${indicator}^"
       fi
       if has_staged_changes; then
-        REPO_COLOR="%F{${PURPLE}}"
+        REPO_COLOR="%F{${YELLOW}}"
         indicator="${indicator}~"
       fi
       if has_unstaged_changes || has_untracked_files; then
