@@ -17,7 +17,7 @@
 #                                        |___|
 
 #       * author    : 0
-#       * ver       : 3.51
+#       * ver       : 3.53
 
 
 
@@ -372,6 +372,8 @@ if [[ $TERM = xterm* ]];then
   local GREEN=47
   local BLUE=31
   local RED=161
+  local PURPLE=171
+  local YELLOW=226
   local RESET="%f%k"
 
   case ${UID} in
@@ -387,6 +389,50 @@ if [[ $TERM = xterm* ]];then
       ;;
   esac
 
+  if [[ $+commands[git] ]]; then
+    is_git_directory() {
+      git rev-parse --is-inside-work-tree &>/dev/null
+    }
+    get_branch_name() {
+      git rev-parse --abbrev-ref HEAD 2>/dev/null
+    }
+    has_staged_changes() {
+      ! git diff --cached --no-ext-diff --quiet --exit-code 2>/dev/null
+    }
+    has_unstaged_changes() {
+      ! git diff --no-ext-diff --quiet --exit-code 2>/dev/null
+    }
+    has_untracked_files(){
+      [ -n "$(git ls-files --others --exclude-standard)" ]
+    }
+    has_unpushed_commits() {
+      ! git rev-parse --quiet --verify "refs/remotes/origin/$(get_branch_name)" >/dev/null
+    }
+    git_prompt() {
+      local branch_name
+      local indicator=" "
+      is_git_directory || return
+      branch_name=$(get_branch_name)
+      if has_unpushed_commits; then
+        REPO_COLOR="%F{${PURPLE}}"
+        indicator="${indicator}^"
+      fi
+      if has_staged_changes; then
+        REPO_COLOR="%F{${YELLOW}}"
+        indicator="${indicator}~"
+      fi
+      if has_unstaged_changes || has_untracked_files; then
+        REPO_COLOR="%F{${RED}}"
+        indicator="${indicator}+"
+      fi
+      if [[ "$indicator" != *"~"* && "$indicator" != *"+"* && "$indicator" != *"^"* ]]; then
+        REPO_COLOR="%F{${GREEN}}"
+        indicator=""
+      fi
+      echo " | ${REPO_COLOR}${branch_name}${indicator:+$indicator}${RESET}"
+    }
+  fi
+
   local COLOR=${FOREGROUND_COLOR}${BACKGROUND_COLOR}
   local PROMPTBODY="${COLOR} %~ ${COLOR}${RESET}%(?.%F{${BLUE}}.%F{${RED}})〉${RESET}"
 
@@ -394,13 +440,13 @@ if [[ $TERM = xterm* ]];then
   PROMPT=${PROMPTBODY}
 
   function u_prompt() {
-    if [[ ( $+commands[python] || $+commands[python3] ) && -e $ZDOTDIR/rc/plugin/prompt.py && ! -f ${HOME}/.zsh.lowspec ]]; then
-      local RETURN=$?
-      PROMPT="$(~/.zsh/rc/plugin/prompt.py ${RETURN})"
-    else
-      local PROMPTBODY="${COLOR} "$(get_formatted_directory_path)" ${RESET}%(?.%F{${BLUE}}.%F{${RED}})〉${RESET}"
+    #if [[ ( $+commands[python] || $+commands[python3] ) && -e $ZDOTDIR/rc/plugin/prompt.py && ! -f ${HOME}/.zsh.lowspec ]]; then
+    #  local RETURN=$?
+    #  PROMPT="$(~/.zsh/rc/plugin/prompt.py ${RETURN})"
+    #else
+      local PROMPTBODY="${COLOR} "$(get_formatted_directory_path)"$(git_prompt) ${RESET}%(?.%F{${BLUE}}.%F{${RED}})〉${RESET}"
       PROMPT=${PROMPTBODY}
-    fi
+    #fi
   }
   precmd() { u_prompt }
 fi
