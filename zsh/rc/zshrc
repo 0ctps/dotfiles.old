@@ -396,9 +396,9 @@ if [[ $TERM = xterm* ]];then
     get_branch_name() {
       git rev-parse --abbrev-ref HEAD 2>/dev/null
     }
-    has_staged_changes() {
-      ! git diff --cached --no-ext-diff --quiet --exit-code 2>/dev/null
-    }
+    #has_staged_changes() {
+    #  ! git diff --cached --no-ext-diff --quiet --exit-code 2>/dev/null
+    #}
     has_unstaged_changes() {
       ! git diff --no-ext-diff --quiet --exit-code 2>/dev/null
     }
@@ -417,15 +417,11 @@ if [[ $TERM = xterm* ]];then
         REPO_COLOR="%F{${PURPLE}}"
         indicator="${indicator}^"
       fi
-      if has_staged_changes; then
-        REPO_COLOR="%F{${YELLOW}}"
-        indicator="${indicator}~"
-      fi
       if has_unstaged_changes || has_untracked_files; then
         REPO_COLOR="%F{${RED}}"
         indicator="${indicator}+"
       fi
-      if [[ "$indicator" != *"~"* && "$indicator" != *"+"* && "$indicator" != *"^"* ]]; then
+      if [[ "$indicator" != *"+"* && "$indicator" != *"^"* ]]; then
         REPO_COLOR="%F{${GREEN}}"
         indicator=""
       fi
