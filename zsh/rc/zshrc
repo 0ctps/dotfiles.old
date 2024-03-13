@@ -17,7 +17,7 @@
 #                                        |___|
 
 #       * author    : 0
-#       * ver       : 3.50
+#       * ver       : 3.51
 
 
 
@@ -384,17 +384,16 @@ if [[ $TERM = xterm* ]];then
   PROMPT=${PROMPTBODY}
   RPROMPT="%F{${FOREGROUND}}%K{${UCOLOR}} %n %F{${GREEN}}%K{${BACKGROUND}} %m ${COLOR}|${COLOR} %w ${COLOR}|${COLOR} %* %f%k"
 
-  if [[ ! -f ${HOME}/.zsh.lowspec ]]; then
-    function u_prompt() {
-      if [[ ( $+commands[python] || $+commands[python3] )  && -e $ZDOTDIR/rc/plugin/prompt.py ]]; then
-        local RETURN=$?
-        PROMPT="$(~/.zsh/rc/plugin/prompt.py ${RETURN})"
-      else
-        local PROMPTBODY="${COLOR} "$(get_formatted_directory_path)" ${COLOR}%F{${DARKWHITE}}%(?.%K{${BLUE}}.%K{${RED}}) * %f%k "
-        PROMPT=${PROMPTBODY}
-      fi
-    }
-  fi
+  function u_prompt() {
+    if [[ ( $+commands[python] || $+commands[python3] )  && -e $ZDOTDIR/rc/plugin/prompt.py  && ! -f ${HOME}/.zsh.lowspec ]]; then
+      local RETURN=$?
+      PROMPT="$(~/.zsh/rc/plugin/prompt.py ${RETURN})"
+    else
+      local PROMPTBODY="${COLOR} "$(get_formatted_directory_path)" ${COLOR}%F{${DARKWHITE}}%(?.%K{${BLUE}}.%K{${RED}}) * %f%k "
+      PROMPT=${PROMPTBODY}
+    fi
+  }
+
   precmd() { u_prompt }
 fi
 
