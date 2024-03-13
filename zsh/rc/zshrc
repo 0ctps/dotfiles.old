@@ -335,65 +335,73 @@ PROMPT="[%~]%(!,#,$) "
 RPROMPT="[%n|%m|%w|%*]"
 SPROMPT="%r is correct [n,y,a,e]: "
 
-get_formatted_directory_path() {
+if [[ $TERM = xterm* ]];then
+  get_formatted_directory_path() {
     local current_dir=$PWD
     local home_dir=$HOME
     local delimiter=" | "
     if [[ "$current_dir" = "$home_dir" ]]; then
-        echo "~"
-        return
+      echo "~"
+      return
     fi
     if [[ "$current_dir" = "$home_dir"* ]]; then
-        current_dir="~${current_dir:${#home_dir}}"
+      current_dir="~${current_dir:${#home_dir}}"
     fi
     local dir_array=("${(s:/:)current_dir}")
     dir_array=(${dir_array:#})
     if [ ${#dir_array[@]} -le 5 ]; then
+      if [ ${#dir_array[@]} -ge 1 ]; then
         local output="${dir_array[1]}"
-        for i in {2..${#dir_array}}; do
+        if [ ${#dir_array[@]} -ne 1 ]; then
+          for i in {2..${#dir_array[@]}}; do
             output="${output}${delimiter}${dir_array[$i]}"
-        done
+          done
+        fi
+      else
+        local output="/"
+      fi
     else
-        output="${dir_array[1]}${delimiter}${dir_array[2]}${delimiter}-${delimiter}${dir_array[-3]}${delimiter}${dir_array[-2]}${delimiter}${dir_array[-1]}"
+      output="${dir_array[1]}${delimiter}${dir_array[2]}${delimiter}...${delimiter}${dir_array[-3]}${delimiter}${dir_array[-2]}${delimiter}${dir_array[-1]}"
     fi
     echo "$output"
-}
+  }
 
-if [[ $TERM = xterm* ]];then
   local DARKGRAY=237
   local DARKWHITE=250
   local WHITE=15
   local GREEN=47
   local BLUE=31
   local RED=161
+  local RESET="%f%k"
 
   case ${UID} in
     0) #root
-      local BACKGROUND_COLOR=${RED}
-      local FOREGROUND_COLOR=${DARKWHITE}
-      local UCOLOR=${RED};;
+      local BACKGROUND_COLOR="%k"
+      local FOREGROUND_COLOR="%F{${RED}}"
+      local USER_COLOR="%F{${RED}}"
+      ;;
     *)
-      local BACKGROUND_COLOR=${DARKGRAY}
-      local FOREGROUND_COLOR=${DARKWHITE}
-      local UCOLOR=${BLUE};;
+      local BACKGROUND_COLOR="%k"
+      local FOREGROUND_COLOR="%F{${DARKWHITE}}"
+      local USER_COLOR="%F{${BLUE}}"
+      ;;
   esac
 
-  local COLOR="%F{${FOREGROUND_COLOR}}%K{${BACKGROUND_COLOR}}"
-  local PROMPTBODY="${COLOR} %~ ${COLOR}%F{${DARKWHITE}}%(?.%K{${BLUE}}.%K{${RED}}) * %f%k "
+  local COLOR=${FOREGROUND_COLOR}${BACKGROUND_COLOR}
+  local PROMPTBODY="${COLOR} %~ ${COLOR}${RESET}%(?.%F{${BLUE}}.%F{${RED}})〉${RESET}"
 
+  RPROMPT="${USER_COLOR} %n ${COLOR}|${COLOR}%F{${GREEN}} %m ${COLOR}|${COLOR} %w ${COLOR}|${COLOR}%*${RESET}"
   PROMPT=${PROMPTBODY}
-  RPROMPT="%F{${WHITE}}%K{${UCOLOR}} %n %F{${GREEN}}%K{${BACKGROUND_COLOR}} %m ${COLOR}|${COLOR} %w ${COLOR}|${COLOR} %* %f%k"
 
   function u_prompt() {
-    if [[ ( $+commands[python] || $+commands[python3] )  && -e $ZDOTDIR/rc/plugin/prompt.py  && ! -f ${HOME}/.zsh.lowspec ]]; then
+    if [[ ( $+commands[python] || $+commands[python3] ) && -e $ZDOTDIR/rc/plugin/prompt.py && ! -f ${HOME}/.zsh.lowspec ]]; then
       local RETURN=$?
       PROMPT="$(~/.zsh/rc/plugin/prompt.py ${RETURN})"
     else
-      local PROMPTBODY="${COLOR} "$(get_formatted_directory_path)" ${COLOR}%F{${WHITE}}%(?.%K{${BLUE}}.%K{${RED}}) * %f%k "
+      local PROMPTBODY="${COLOR} "$(get_formatted_directory_path)" ${RESET}%(?.%F{${BLUE}}.%F{${RED}})〉${RESET}"
       PROMPT=${PROMPTBODY}
     fi
   }
-
   precmd() { u_prompt }
 fi
 
