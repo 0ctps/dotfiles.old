@@ -396,9 +396,9 @@ if [[ $TERM = xterm* ]];then
     get_branch_name() {
       git rev-parse --abbrev-ref HEAD 2>/dev/null
     }
-    #has_staged_changes() {
-    #  ! git diff --cached --no-ext-diff --quiet --exit-code 2>/dev/null
-    #}
+    has_staged_changes() {
+      ! git diff --cached --no-ext-diff --quiet --exit-code 2>/dev/null
+    }
     has_unstaged_changes() {
       ! git diff --no-ext-diff --quiet --exit-code 2>/dev/null
     }
@@ -417,11 +417,15 @@ if [[ $TERM = xterm* ]];then
         REPO_COLOR="%F{${PURPLE}}"
         indicator="${indicator}^"
       fi
+      if has_staged_changes; then
+        REPO_COLOR="%F{${PURPLE}}"
+        indicator="${indicator}~"
+      fi
       if has_unstaged_changes || has_untracked_files; then
         REPO_COLOR="%F{${RED}}"
         indicator="${indicator}+"
       fi
-      if [[ "$indicator" != *"+"* && "$indicator" != *"^"* ]]; then
+      if [[ ${indicator} =~ [+~^] ]]; then
         REPO_COLOR="%F{${GREEN}}"
         indicator=""
       fi
@@ -430,10 +434,9 @@ if [[ $TERM = xterm* ]];then
   fi
 
   local COLOR=${FOREGROUND_COLOR}${BACKGROUND_COLOR}
-  local PROMPTBODY="${COLOR} %~ ${COLOR}${RESET}%(?.%F{${BLUE}}.%F{${RED}})〉${RESET}"
 
   RPROMPT="${USER_COLOR} %n ${COLOR}|${COLOR}%F{${GREEN}} %m ${COLOR}|${COLOR} %w ${COLOR}|${COLOR}%*${RESET}"
-  PROMPT=${PROMPTBODY}
+  PROMPT="${COLOR} %~ ${COLOR}${RESET}%(?.%F{${BLUE}}.%F{${RED}})〉${RESET}"
 
   function u_prompt() {
     #if [[ ( $+commands[python] || $+commands[python3] ) && -e $ZDOTDIR/rc/plugin/prompt.py && ! -f ${HOME}/.zsh.lowspec ]]; then
