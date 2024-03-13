@@ -425,7 +425,7 @@ if [[ $TERM = xterm* ]];then
         REPO_COLOR="%F{${RED}}"
         indicator="${indicator}+"
       fi
-      if [[ ${indicator} =~ [+~^] ]]; then
+      if [[ ! ${indicator} =~ [\+\~\^] ]]; then
         REPO_COLOR="%F{${GREEN}}"
         indicator=""
       fi
