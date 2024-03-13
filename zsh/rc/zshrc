@@ -406,7 +406,7 @@ if [[ $TERM = xterm* ]];then
       [ -n "$(git ls-files --others --exclude-standard)" ]
     }
     has_unpushed_commits() {
-      ! git rev-parse --quiet --verify "refs/remotes/origin/$(get_branch_name)" >/dev/null
+      ! git rev-parse --quiet --verify "HEAD@{upstream}" >/dev/null
     }
     git_prompt() {
       local branch_name
