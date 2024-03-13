@@ -369,20 +369,20 @@ if [[ $TERM = xterm* ]];then
 
   case ${UID} in
     0) #root
-      local BACKGROUND=${RED}
-      local FOREGROUND=${WHITE}
+      local BACKGROUND_COLOR=${RED}
+      local FOREGROUND_COLOR=${DARKWHITE}
       local UCOLOR=${RED};;
     *)
-      local BACKGROUND=${DARKGRAY}
-      local FOREGROUND=${WHITE}
+      local BACKGROUND_COLOR=${DARKGRAY}
+      local FOREGROUND_COLOR=${DARKWHITE}
       local UCOLOR=${BLUE};;
   esac
 
-  local COLOR="%F{${FOREGROUND}}%K{${BACKGROUND}}"
+  local COLOR="%F{${FOREGROUND_COLOR}}%K{${BACKGROUND_COLOR}}"
   local PROMPTBODY="${COLOR} %~ ${COLOR}%F{${DARKWHITE}}%(?.%K{${BLUE}}.%K{${RED}}) * %f%k "
 
   PROMPT=${PROMPTBODY}
-  RPROMPT="%F{${FOREGROUND}}%K{${UCOLOR}} %n %F{${GREEN}}%K{${BACKGROUND}} %m ${COLOR}|${COLOR} %w ${COLOR}|${COLOR} %* %f%k"
+  RPROMPT="%F{${WHITE}}%K{${UCOLOR}} %n %F{${GREEN}}%K{${BACKGROUND_COLOR}} %m ${COLOR}|${COLOR} %w ${COLOR}|${COLOR} %* %f%k"
 
   function u_prompt() {
     if [[ ( $+commands[python] || $+commands[python3] )  && -e $ZDOTDIR/rc/plugin/prompt.py  && ! -f ${HOME}/.zsh.lowspec ]]; then
