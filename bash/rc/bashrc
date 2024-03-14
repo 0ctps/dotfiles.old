@@ -24,7 +24,7 @@
 #                                         |___|
 
 #       * auther    : 0
-#       * ver       : 1.00
+#       * ver       : 1.01
 
 
 
@@ -139,31 +139,31 @@ fi
 #https://github.com/junegunn/fzf
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 if [ -x "$(command -v fzf)" ]; then
- fe() {
-  local file
-  file=$(fzf --query="$1" --select-1 --exit-0)
-  [ -n "$file" ] && ${EDITOR:-vim} "$file"
- }
+  fe() {
+    local file
+    file=$(fzf --query="$1" --select-1 --exit-0)
+    [ -n "$file" ] && ${EDITOR:-vim} "$file"
+  }
 
- fd() {
-  local dir
-  dir=$(find ${1:-*} -path '*/\.*' -prune -o -type d -print 2> /dev/null | fzf +m) &&
-  cd "$dir"
- }
+  fd() {
+    local dir
+    dir=$(find ${1:-*} -path '*/\.*' -prune -o -type d -print 2> /dev/null | fzf +m) &&
+    cd "$dir"
+  }
 
- fh() {
-  selected_command=$( ([ -n "$BASH_VERSION" ] && fc -l 1 || history) | fzf +s | sed 's/ *[0-9]* *//')
-  if [ -n "$BASH_VERSION" ]; then
-    print -s "$selected_command"
-  else
-    history -s "$selected_command"
-  fi
-  eval "$selected_command"
- }
+  fh() {
+    selected_command=$( ([ -n "$BASH_VERSION" ] && fc -l 1 || history) | fzf +s | sed 's/ *[0-9]* *//')
+    if [ -n "$BASH_VERSION" ]; then
+      print -s "$selected_command"
+    else
+      history -s "$selected_command"
+    fi
+    eval "$selected_command"
+  }
 
- fkill() {
-  ps -ef | sed 1d | fzf -m | awk '{print $2}' | xargs kill -${1:-9}
- }
+  fkill() {
+    ps -ef | sed 1d | fzf -m | awk '{print $2}' | xargs kill -${1:-9}
+  }
 fi
 
 [ -f ~/.enhancd/init.sh ] && source ~/.enhancd/init.sh
@@ -183,20 +183,20 @@ alias c=runcpp
 alias cpp=runcpp
 
 function extract() {
- case $1 in
-   *.tar.gz|*.tgz) tar xzvf $1;;
-   *.tar.xz) tar Jxvf $1;;
-   *.zip) unzip $1;;
-   *.lzh) lha e $1;;
-   *.tar.bz2|*.tbz) tar xjvf $1;;
-   *.tar.Z) tar zxvf $1;;
-   *.gz) gzip -d $1;;
-   *.bz2) bzip2 -dc $1;;
-   *.Z) uncompress $1;;
-   *.tar) tar xvf $1;;
-   *.arj) unarj $1;;
-   *.rar) unrar $1;;
- esac
+  case $1 in
+    *.tar.gz|*.tgz) tar xzvf $1;;
+    *.tar.xz) tar Jxvf $1;;
+    *.zip) unzip $1;;
+    *.lzh) lha e $1;;
+    *.tar.bz2|*.tbz) tar xjvf $1;;
+    *.tar.Z) tar zxvf $1;;
+    *.gz) gzip -d $1;;
+    *.bz2) bzip2 -dc $1;;
+    *.Z) uncompress $1;;
+    *.tar) tar xvf $1;;
+    *.arj) unarj $1;;
+    *.rar) unrar $1;;
+  esac
 }
 alias gz='extract'
 alias tgz='extract'
@@ -213,22 +213,28 @@ alias rar='extract'
 alias diff='diff -u'
 
 if [ -x "$(command -v tmux)" ]; then
- alias tl='tmux ls'
- alias tk='tmux kill-session -t $1'
- alias ta='tmux a'
- alias tat='tmux a -t $1'
+  alias tl='tmux ls'
+  alias tk='tmux kill-session -t $1'
+  alias ta='tmux a'
+  alias tat='tmux a -t $1'
 fi
+
+alias ls='ls -F --color=auto --group-directories-first'
+alias cd='cd_func'
+cd_func() {
+  builtin cd "$@" && ls;
+}
 
 # * »»» color --------------------------/
 
 # * »»»» cat
 if [ -x "$(command -v pygmentize)" ]; then
- alias cat='pygmentize -O style=monokai -f console256 -g'
+  alias cat='pygmentize -O style=monokai -f console256 -g'
 fi
 
 # * »»»» diff
 if [ -x "$(command -v colordiff)" ]; then
- alias diff='colordiff -u'
+  alias diff='colordiff -u'
 fi
 
 # * »»»» less
@@ -256,16 +262,16 @@ alias grep='grep --color'
 
 # * »»»» grc
 if [ -x "$(command -v grc)" ]; then
- alias mount='grc mount'
- alias ifconfig='grc ifconfig'
- alias dig='grc dig'
- alias ldap='grc ldap'
- alias netstat='grc netstat'
- alias ping='grc ping'
- alias ps='grc ps'
- alias traceroute='grc traceroute'
- alias gcc='grc gcc'
- alias g++='grc g++'
+  alias mount='grc mount'
+  alias ifconfig='grc ifconfig'
+  alias dig='grc dig'
+  alias ldap='grc ldap'
+  alias netstat='grc netstat'
+  alias ping='grc ping'
+  alias ps='grc ps'
+  alias traceroute='grc traceroute'
+  alias gcc='grc gcc'
+  alias g++='grc g++'
 fi
 
 # * ««« --------------------------------/
@@ -286,9 +292,9 @@ fi
 # [
 
 case $TERM in
- xterm*)
-   export TERM=xterm-256color
-   ;;
+  xterm*)
+    export TERM=xterm-256color
+    ;;
 esac
 
 
@@ -298,17 +304,14 @@ esac
 
 export LSCOLORS=gxfxcxdxbxegedabagacad
 export LS_COLORS='no=00;38;5;244:rs=0:di=00;38;5;33:ln=00;38;5;37:mh=00:pi=48;5;230;38;5;136;01:so=48;5;230;38;5;136;01:do=48;5;230;38;5;136;01:bd=48;5;230;38;5;244;01:cd=48;5;230;38;5;244;01:or=48;5;235;38;5;160:su=48;5;160;38;5;230:sg=48;5;136;38;5;230:ca=30;41:tw=48;5;64;38;5;230:ow=48;5;235;38;5;33:st=48;5;33;38;5;230:ex=00;38;5;64:'
-if [ -e $HOME/.dircolors ]; then
- if [ -x "$(command -v dircolors)" ]; then
-   eval $(dircolors $HOME/.dircolors)
- elif [ -x "$(command -v gdircolors)" ]; then
-   eval $(gdircolors $HOME/.dircolors)
- fi
-fi
-export ZLS_COLORS=$LS_COLORS
-export CLICOLOR=true
 
-alias ls='ls -F --color=auto --group-directories-first'
+if [ -e "$HOME/.dircolors" ]; then
+  if [ -x "$(command -v dircolors)" ]; then
+    eval "$(dircolors "$HOME/.dircolors")"
+  fi
+fi
+
+export CLICOLOR=true
 
 # ]]
 # * «« -------------------------------------------------/
@@ -543,9 +546,7 @@ case "${OSTYPE}" in #uname http://en.wikipedia.org/wiki/Uname
     fi ;;
 esac
 
-function cd() {
-  builtin cd "$@" && ls;
-}
+
 
 # ]
 
