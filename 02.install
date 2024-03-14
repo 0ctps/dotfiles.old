@@ -96,6 +96,7 @@ usage() {
     help    | --help    | -h | --usage : Display this message
     version | --version | -v           : Show version of this program
     all     | --all                    : Install dotfiles for ssh, tmux, vim and zsh
+    bash    | --bash                   : Install bash's dotfiles
     ssh     | --ssh                    : Install ssh configuration files
     tmux    | --tmux                   : Install tmux's dotfiles
     vim     | --vim                    : Install vim's dotfiles
@@ -116,7 +117,11 @@ do
       exit 0
       ;;
     '-a'|'--all'|'all')
-      flag+=("ssh" "tmux" "vim" "zsh")
+      flag+=("bash" "ssh" "tmux" "vim" "zsh")
+      shift 1
+      ;;
+    '--bash'|'bash')
+      flag+=("bash")
       shift 1
       ;;
     '--ssh'|'ssh')
@@ -163,6 +168,24 @@ fi
 setconf ()
 {
   case ${1} in
+    bash)
+      local dirname="bash"
+      local makedir=".cache/${dirname}"
+      local -a filename=("bash_profile" "bashrc" ".")
+      local -a linkname=(".bash_profile" ".bashrc" ".${dirname}")
+      local -a option=("dir" "link")
+      ;;
+    ssh)
+      local dirname="ssh"
+      local makedir=".${dirname}/pub"
+      local -a option=("dir")
+      ;;
+    tmux)
+      local dirname="tmux"
+      local -a filename=("tmux.conf")
+      local -a linkname=(".tmux.conf")
+      local -a option=("link")
+      ;;
     vim)
       local dirname="vim"
       local makedir=".${dirname}"
@@ -176,17 +199,6 @@ setconf ()
       local -a filename=("zshenv" ".")
       local -a linkname=(".zshenv" ".${dirname}")
       local -a option=("dir" "link")
-      ;;
-    ssh)
-      local dirname="ssh"
-      local makedir=".${dirname}/pub"
-      local -a option=("dir")
-      ;;
-    tmux)
-      local dirname="tmux"
-      local -a filename=("tmux.conf")
-      local -a linkname=(".tmux.conf")
-      local -a option=("link")
       ;;
     *)
       return 0
