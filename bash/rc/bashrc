@@ -209,6 +209,8 @@ alias arj='extract'
 alias xz='extract'
 alias rar='extract'
 
+alias zmv='noglob zmv -W'
+alias fuck='eval $(thefuck $(fc -ln -1))'
 alias diff='diff -u'
 
 if [ -x "$(command -v tmux)" ]; then
@@ -322,8 +324,7 @@ export CLICOLOR=true
 # * »» prompt -----------------------------------------/
 # [[
 
-PROMPT="%d%(!,#,$) "
-RPROMPT="%n|%m|%w|%*"
+PS1='\w\$ '
 SPROMPT="%r is correct [n,y,a,e]: "
 
 case "$TERM" in
