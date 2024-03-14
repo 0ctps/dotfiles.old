@@ -1,144 +1,567 @@
-# Enable the subsequent settings only in interactive sessions
-case $- in
-  *i*) ;;
-    *) return;;
+#                          . . .
+#                     .             .
+#                .                      .
+#             .
+#           =                                :
+#           |                             ====
+#           |                         -=======
+#           |                     ============
+#           |                 ================
+#           |                +===-:===========
+#           |                +==-   +=========
+#           |                +=+ -============
+#           |                +==    ==========
+#           -                +===+  ===::====+
+#              .             +=+   +=::=+===
+#                  .         +=== -======
+#                      .     +====-
+#                         . .+."'
+
+#               __    _             _
+#               \ \  | |__  __ _ __| |_
+#                > > | '_ \/ _` (_-< ' \
+#               /_/  |_.__/\__,_/__/_||_|  ___
+#                                         |___|
+
+#       * auther    : 0
+#       * ver       : 1.00
+
+
+
+
+
+
+# * »   [1] general
+# -------------------------------------------                            /
+# ----------------------------------------------------------------------/
+# [
+
+export EDITOR=vim
+export LANG=en_US
+export ENCODE=UTF-8
+export LC_CTYPE=$LANG.$ENCODE
+export LC_ALL=$LANG.$ENCODE
+export KCODE=u
+
+set -o vi
+bind '"jj":vi-movement-mode'
+
+#shopt -s auto_pushd
+shopt -s autocd
+shopt -u mailwarn
+shopt -u hostcomplete
+alias history='history -E'
+
+# ref. https://rcmdnk.com/blog/2017/10/13/computer-bash-zsh
+source_file() {
+ if [ $# -lt 1 ]; then
+   echo "ERROR!!! source_file is called w/o an argument"
+   return
+ fi
+ for arg in "$@"; do
+   if [ -r "$arg" ]; then
+     . "$arg"
+   fi
+ done
+}
+# end
+
+
+
+# * »»  complement -------------------------------------/
+# [[
+
+if [ -f /usr/share/bash-completion/bash_completion ]; then
+ . /usr/share/bash-completion/bash_completion
+elif [ -f /etc/bash_completion ]; then
+ . /etc/bash_completion
+fi
+bind '"\e[Z":menu-complete'
+shopt -s nocaseglob
+shopt -s extglob
+#shopt -u nomatch
+complete -cf sudo
+
+# ]]
+# * «« -------------------------------------------------/
+
+
+
+# * »»  history ----------------------------------------/
+# [[
+
+# ref. https://unix.stackexchange.com/questions/273861/unlimited-history-in-zsh
+export HISTFILE=$HOME/.bash_history
+export HISTSIZE=10000000
+export SAVEHIST=10000000
+
+shopt -s histappend
+shopt -s histreedit
+shopt -s histverify
+shopt -s extglob
+shopt -s cmdhist
+
+bind '"\e[A":history-search-backward'
+bind '"\e[B":history-search-forward'
+function history-all { history -E 1; }
+
+# ]]
+# * «« -------------------------------------------------/
+
+
+
+# * »»  path -------------------------------------------/
+# [[
+
+if [ -e $HOME/.go ]; then
+ export GOPATH=$HOME/.go
+ export PATH=$GOPATH/bin:$PATH
+ export GO15VENDOREXPERIMENT=1
+fi
+
+if [ -e $HOME/.cargo/bin ]; then
+ export PATH="$HOME/.cargo/bin:$PATH"
+fi
+
+# ]]
+# * «« -------------------------------------------------/
+
+
+
+# * »»  plugin -----------------------------------------/
+# [[
+
+#if [ -x "$(command -v git)" ]; then
+# #
+#fi
+
+#https://github.com/junegunn/fzf
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+if [ -x "$(command -v fzf)" ]; then
+ fe() {
+  local file
+  file=$(fzf --query="$1" --select-1 --exit-0)
+  [ -n "$file" ] && ${EDITOR:-vim} "$file"
+ }
+
+ fd() {
+  local dir
+  dir=$(find ${1:-*} -path '*/\.*' -prune -o -type d -print 2> /dev/null | fzf +m) &&
+  cd "$dir"
+ }
+
+ fh() {
+  selected_command=$( ([ -n "$BASH_VERSION" ] && fc -l 1 || history) | fzf +s | sed 's/ *[0-9]* *//')
+  if [ -n "$BASH_VERSION" ]; then
+    print -s "$selected_command"
+  else
+    history -s "$selected_command"
+  fi
+  eval "$selected_command"
+ }
+
+ fkill() {
+  ps -ef | sed 1d | fzf -m | awk '{print $2}' | xargs kill -${1:-9}
+ }
+fi
+
+[ -f ~/.enhancd/init.sh ] && source ~/.enhancd/init.sh
+
+# ]]
+# * «« -------------------------------------------------/
+
+
+
+# * »»  alias -------------------------------------------/
+# [[
+
+alias v='vim'
+
+function runcpp() { gcc "$1" && shift && ./a.out "$@"; }
+alias c=runcpp
+alias cpp=runcpp
+
+function extract() {
+ case $1 in
+   *.tar.gz|*.tgz) tar xzvf $1;;
+   *.tar.xz) tar Jxvf $1;;
+   *.zip) unzip $1;;
+   *.lzh) lha e $1;;
+   *.tar.bz2|*.tbz) tar xjvf $1;;
+   *.tar.Z) tar zxvf $1;;
+   *.gz) gzip -d $1;;
+   *.bz2) bzip2 -dc $1;;
+   *.Z) uncompress $1;;
+   *.tar) tar xvf $1;;
+   *.arj) unarj $1;;
+   *.rar) unrar $1;;
+ esac
+}
+alias gz='extract'
+alias tgz='extract'
+alias zip='extract'
+alias lzh='extract'
+alias bz2='extract'
+alias tbz='extract'
+alias Z='extract'
+alias tar='extract'
+alias arj='extract'
+alias xz='extract'
+alias rar='extract'
+
+alias diff='diff -u'
+
+if [ -x "$(command -v tmux)" ]; then
+ alias tl='tmux ls'
+ alias tk='tmux kill-session -t $1'
+ alias ta='tmux a'
+ alias tat='tmux a -t $1'
+fi
+
+# * »»» color --------------------------/
+
+# * »»»» cat
+if [ -x "$(command -v pygmentize)" ]; then
+ alias cat='pygmentize -O style=monokai -f console256 -g'
+fi
+
+# * »»»» diff
+if [ -x "$(command -v colordiff)" ]; then
+ alias diff='colordiff -u'
+fi
+
+# * »»»» less
+export MANPAGER='less -R'
+function man() {
+ env \
+   LESS_TERMCAP_mb=$(printf "\e[1;31m") \
+   LESS_TERMCAP_md=$(printf "\e[1;31m") \
+   LESS_TERMCAP_me=$(printf "\e[0m") \
+   LESS_TERMCAP_se=$(printf "\e[0m") \
+   LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
+   LESS_TERMCAP_ue=$(printf "\e[0m") \
+   LESS_TERMCAP_us=$(printf "\e[1;32m") \
+   man "$@"
+}
+if [ -x "$(command -v unbuffered)" ]; then
+ function less_with_unbuffer() {
+   unbuffered "$@" |& less -SR
+ }
+   alias ul=less_with_unbuffer
+fi
+
+# * »»»» grep
+alias grep='grep --color'
+
+# * »»»» grc
+if [ -x "$(command -v grc)" ]; then
+ alias mount='grc mount'
+ alias ifconfig='grc ifconfig'
+ alias dig='grc dig'
+ alias ldap='grc ldap'
+ alias netstat='grc netstat'
+ alias ping='grc ping'
+ alias ps='grc ps'
+ alias traceroute='grc traceroute'
+ alias gcc='grc gcc'
+ alias g++='grc g++'
+fi
+
+# * ««« --------------------------------/
+
+
+# ]]
+# * «« -------------------------------------------------/
+
+# ]
+
+
+
+
+
+# * »   [2] look
+# -------------------------------------------                           /
+# ---------------------------------------------------------------------/
+# [
+
+case $TERM in
+ xterm*)
+   export TERM=xterm-256color
+   ;;
 esac
 
-# Path to your oh-my-bash installation.
-export OSH=${BDOTDIR}'.oh-my-bash'
 
-# Set name of the theme to load. Optionally, if you set this to "random"
-# it'll load a random theme each time that oh-my-bash is loaded.
-OSH_THEME="agnoster"
 
-# If you set OSH_THEME to "random", you can ignore themes you don't like.
-# OMB_THEME_RANDOM_IGNORED=("powerbash10k" "wanelo")
+# * »»  ls color ---------------------------------------/
+# [[
 
-# Uncomment the following line to use case-sensitive completion.
-# OMB_CASE_SENSITIVE="true"
+export LSCOLORS=gxfxcxdxbxegedabagacad
+export LS_COLORS='no=00;38;5;244:rs=0:di=00;38;5;33:ln=00;38;5;37:mh=00:pi=48;5;230;38;5;136;01:so=48;5;230;38;5;136;01:do=48;5;230;38;5;136;01:bd=48;5;230;38;5;244;01:cd=48;5;230;38;5;244;01:or=48;5;235;38;5;160:su=48;5;160;38;5;230:sg=48;5;136;38;5;230:ca=30;41:tw=48;5;64;38;5;230:ow=48;5;235;38;5;33:st=48;5;33;38;5;230:ex=00;38;5;64:'
+if [ -e $HOME/.dircolors ]; then
+ if [ -x "$(command -v dircolors)" ]; then
+   eval $(dircolors $HOME/.dircolors)
+ elif [ -x "$(command -v gdircolors)" ]; then
+   eval $(gdircolors $HOME/.dircolors)
+ fi
+fi
+export ZLS_COLORS=$LS_COLORS
+export CLICOLOR=true
 
-# Uncomment the following line to use hyphen-insensitive completion. Case
-# sensitive completion must be off. _ and - will be interchangeable.
-# OMB_HYPHEN_SENSITIVE="false"
+alias ls='ls -F --color=auto --group-directories-first'
 
-# Uncomment the following line to disable bi-weekly auto-update checks.
-# DISABLE_AUTO_UPDATE="true"
+# ]]
+# * «« -------------------------------------------------/
 
-# Uncomment the following line to change how often to auto-update (in days).
-# export UPDATE_OSH_DAYS=13
 
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
 
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
-# Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
-
-# Uncomment the following line to display red dots whilst waiting for completion.
-# COMPLETION_WAITING_DOTS="true"
-
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you don't want the repository to be considered dirty
-# if there are untracked files.
-# SCM_GIT_DISABLE_UNTRACKED_DIRTY="true"
-
-# Uncomment the following line if you want to completely ignore the presence
-# of untracked files in the repository.
-# SCM_GIT_IGNORE_UNTRACKED="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.  One of the following values can
-# be used to specify the timestamp format.
-# * 'mm/dd/yyyy'     # mm/dd/yyyy + time
-# * 'dd.mm.yyyy'     # dd.mm.yyyy + time
-# * 'yyyy-mm-dd'     # yyyy-mm-dd + time
-# * '[mm/dd/yyyy]'   # [mm/dd/yyyy] + [time] with colors
-# * '[dd.mm.yyyy]'   # [dd.mm.yyyy] + [time] with colors
-# * '[yyyy-mm-dd]'   # [yyyy-mm-dd] + [time] with colors
-# If not set, the default value is 'yyyy-mm-dd'.
-# HIST_STAMPS='yyyy-mm-dd'
-
-# Uncomment the following line if you do not want OMB to overwrite the existing
-# aliases by the default OMB aliases defined in lib/*.sh
-# OMB_DEFAULT_ALIASES="check"
-
-# Would you like to use another custom folder than $OSH/custom?
-# OSH_CUSTOM=/path/to/new-custom-folder
-
-# To disable the uses of "sudo" by oh-my-bash, please set "false" to
-# this variable.  The default behavior for the empty value is "true".
-OMB_USE_SUDO=true
-
-# To enable/disable display of Python virtualenv and condaenv
-# OMB_PROMPT_SHOW_PYTHON_VENV=true  # enable
-# OMB_PROMPT_SHOW_PYTHON_VENV=false # disable
-
-# Which completions would you like to load? (completions can be found in ~/.oh-my-bash/completions/*)
-# Custom completions may be added to ~/.oh-my-bash/custom/completions/
-# Example format: completions=(ssh git bundler gem pip pip3)
-# Add wisely, as too many completions slow down shell startup.
-completions=(
-  git
-  composer
-  ssh
-)
-
-# Which aliases would you like to load? (aliases can be found in ~/.oh-my-bash/aliases/*)
-# Custom aliases may be added to ~/.oh-my-bash/custom/aliases/
-# Example format: aliases=(vagrant composer git-avh)
-# Add wisely, as too many aliases slow down shell startup.
-aliases=(
-  general
-)
-
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-bash/plugins/*)
-# Custom plugins may be added to ~/.oh-my-bash/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-plugins=(
-  git
-  bashmarks
-)
-
-# Which plugins would you like to conditionally load? (plugins can be found in ~/.oh-my-bash/plugins/*)
-# Custom plugins may be added to ~/.oh-my-bash/custom/plugins/
-# Example format:
-#  if [ "$DISPLAY" ] || [ "$SSH" ]; then
-#      plugins+=(tmux-autoattach)
-#  fi
-
-source "$OSH"/oh-my-bash.sh
-
-# User configuration
-# export MANPATH="/usr/local/man:$MANPATH"
-
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
-
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
-
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
-
-# ssh
-# export SSH_KEY_PATH="~/.ssh/rsa_id"
-
-# Set personal aliases, overriding those provided by oh-my-bash libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-bash
-# users are encouraged to define aliases within the OSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
+# * »» prompt -----------------------------------------/
 #
-# Example aliases
-# alias bashconfig="mate ~/.bashrc"
-# alias ohmybash="mate ~/.oh-my-bash"
+
+# * »» prompt -----------------------------------------/
+#
+PROMPT="%d%(!,#,$) "
+RPROMPT="%n|%m|%w|%*"
+SPROMPT="%r is correct [n,y,a,e]: "
+
+case "$TERM" in
+  xterm*)
+    get_formatted_directory_path() {
+      local current_dir="$PWD"
+      local home_dir="$HOME"
+      local delimiter=" | "
+
+      if [ "$current_dir" = "/" ]; then
+        echo "/"
+        return
+      fi
+
+      if [ "$current_dir" = "$home_dir" ]; then
+        echo "~"
+        return
+      fi
+
+      local dir_array=()
+      IFS="/" read -ra tmp_array <<< "$current_dir"
+      for dir in "${tmp_array[@]}"; do
+        if [ -n "$dir" ]; then
+          dir_array+=("$dir")
+        fi
+      done
+
+      if [ "${current_dir:0:${#home_dir}}" = "$home_dir" ]; then
+        dir_array=("~" "${dir_array[@]:2}")
+      fi
+
+      if [ ${#dir_array[@]} -gt 5 ]; then
+        dir_array=("${dir_array[0]}" "${dir_array[1]}" "..." "${dir_array[-3]}" "${dir_array[-2]}" "${dir_array[-1]}")
+      fi
+
+      local output=""
+      for i in "${!dir_array[@]}"; do
+        if [ $i -gt 0 ]; then
+          output="${output}${delimiter}"
+        fi
+        output="${output}${dir_array[$i]}"
+      done
+
+      echo "$output"
+    }
+
+    DARKGRAY="\033[38;5;237m"
+    DARKWHITE="\033[38;5;250m"
+    WHITE="\033[38;5;15m"
+    GREEN="\033[38;5;47m"
+    BLUE="\033[38;5;31m"
+    RED="\033[38;5;161m"
+    PURPLE="\033[38;5;171m"
+    YELLOW="\033[38;5;226m"
+    RESET="\033[0m"
+
+    case ${UID} in
+      0) #root
+        BACKGROUND_COLOR=""
+        FOREGROUND_COLOR="${RED}"
+        USER_COLOR="${RED}"
+        ;;
+      *)
+        BACKGROUND_COLOR=""
+        FOREGROUND_COLOR="${DARKWHITE}"
+        USER_COLOR="${BLUE}"
+        ;;
+    esac
+
+    if command -v git &>/dev/null; then
+      is_git_directory() {
+        git rev-parse --is-inside-work-tree &>/dev/null
+      }
+
+      get_branch_name() {
+        git rev-parse --abbrev-ref HEAD 2>/dev/null
+      }
+
+      has_staged_changes() {
+        ! git diff --cached --no-ext-diff --quiet --exit-code 2>/dev/null
+      }
+
+      has_unstaged_changes() {
+        ! git diff --no-ext-diff --quiet --exit-code 2>/dev/null
+      }
+
+      has_untracked_files() {
+        [ -n "$(git ls-files --others --exclude-standard)" ]
+      }
+
+      has_unpushed_commits() {
+        local branch_name=$(get_branch_name)
+        local remote_ref="refs/remotes/origin/${branch_name}"
+        local commit_count=$(git rev-list "${remote_ref}"..HEAD --count 2>/dev/null)
+        [ "$commit_count" -gt 0 ]
+      }
+
+      git_prompt() {
+        local branch_name
+        local indicator=" "
+        is_git_directory || return
+
+        branch_name=$(get_branch_name)
+
+        if has_unpushed_commits; then
+          REPO_COLOR="${PURPLE}"
+          indicator="${indicator}^"
+        fi
+
+        if has_staged_changes; then
+          REPO_COLOR="${YELLOW}"
+          indicator="${indicator}~"
+        fi
+
+        if has_unstaged_changes || has_untracked_files; then
+          REPO_COLOR="${RED}"
+          indicator="${indicator}+"
+        fi
+
+        if [[ ! "${indicator}" =~ [\+\~\^] ]]; then
+          REPO_COLOR="${GREEN}"
+          indicator=""
+        fi
+
+        echo " | ${REPO_COLOR}${branch_name}${indicator:+$indicator}${RESET}"
+      }
+    fi
+
+    set_prompt_color() {
+      local exit_status=$?
+      if [ $exit_status -eq 0 ]; then
+        PROMPT_COLOR="${BLUE}"
+      else
+        PROMPT_COLOR="${RED}"
+      fi
+    }
+
+    COLOR=${FOREGROUND_COLOR}${BACKGROUND_COLOR}
+    PS2="${USER_COLOR} %n ${COLOR}|${COLOR}%F{${GREEN}} %m ${COLOR}|${COLOR} %w ${COLOR}|${COLOR} %*${RESET}"
+
+    function prompt_update {
+      set_prompt_color
+      PS1="${COLOR} $(get_formatted_directory_path)$(git_prompt) ${RESET}${PROMPT_COLOR}〉${RESET}"
+    }
+
+    PROMPT_COMMAND="prompt_update"
+    ;;
+  *)
+    ;;
+esac
+
+# * »»» prompt reset (time sync) -------/
+
+#reset_tmout() { TMOUT=$[1-$(date +%s)%1]; }
+#precmd_functions+=(reset_tmout)
+#redraw_tmout() { printf "\r"; reset_tmout; }
+
+# * ««« --------------------------------/
+
+# ]]
+# * «« -------------------------------------------------/
+
+# ]
+
+
+
+
+
+# * »   [3] os
+# -------------------------------------------                           /
+# ---------------------------------------------------------------------/
+# [
+
+case "${OSTYPE}" in #uname http://en.wikipedia.org/wiki/Uname
+  # linux
+  linux*)
+    if [ -d "${HOME}/usr/bin" ]; then
+      export PATH="${HOME}/usr/bin:${PATH}"
+    fi
+    if [ -d "${HOME}/bin" ]; then
+      export PATH="${HOME}/bin:${PATH}"
+    fi
+    if [ -d "${HOME}/.bin" ]; then
+      export PATH="${HOME}/.bin:${PATH}"
+    fi
+    if [ -e "${HOME}/.tmux.conf" ] && [ -x "$(command -v tmux)" ]; then
+      if [ -z "$TMUX" ] && [ "$-" != "*l*" ]; then # l option = login shell
+        ID="$(tmux list-sessions 2>/dev/null)"
+        if [ -z "$ID" ]; then
+          tmux new-session
+        fi
+        if [ -x "$(command -v fzf)" ]; then
+          create_new_session="Create New Session"
+          ID="$ID\n${create_new_session}:"
+          ID=$(echo "$ID" | fzf | cut -d: -f1)
+          if [ "$ID" == "${create_new_session}" ]; then
+            tmux new-session
+          elif [ -n "$ID" ]; then
+            echo "$ID"
+            tmux attach-session -t "$ID"
+          else
+            :
+          fi
+        fi
+      fi
+    fi ;;
+  # mac os
+  darwin*)
+    alias ls='ls -G -F -L' ;;
+  # windows
+  CYGWIN*) ;;
+  msys*)
+    alias shutdown='shutdown -s -f'
+    if [ -x "$(command -v winpty)" ]; then
+      alias cl='winpty cl'
+      alias diskpart='winpty diskpart'
+      alias sdelete='winpty sdelete'
+      alias mysql='winpty mysql'
+    fi ;;
+esac
+
+function cd() {
+  builtin cd "$@" && ls;
+}
+
+# ]
+
+
+
+
+
+# * »   [4] local setting
+# -------------------------------------------                           /
+# ---------------------------------------------------------------------/
+# [
+
+source_file $HOME/.bashrc.local
+
+if [ -f "${HOME}/.bash-git-prompt/gitprompt.sh" ]; then
+  GIT_PROMPT_ONLY_IN_REPO=1
+  source "${HOME}/.bash-git-prompt/gitprompt.sh"
+fi
+
+# ]

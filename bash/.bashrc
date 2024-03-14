@@ -28,6 +28,9 @@
 
 
 
+
+export BDOTDIR=$HOME/.bash
+
 if [[ -e $BDOTDIR/rc/bashrc ]]; then
   source $BDOTDIR/rc/bashrc
 fi
