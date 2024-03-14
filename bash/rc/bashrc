@@ -45,6 +45,7 @@ export KCODE=u
 
 set -o vi
 bind '"jj":vi-movement-mode'
+bind -x '"\C-l": clear;'
 
 #shopt -s auto_pushd
 shopt -s autocd
@@ -233,21 +234,21 @@ fi
 # * »»»» less
 export MANPAGER='less -R'
 function man() {
- env \
-   LESS_TERMCAP_mb=$(printf "\e[1;31m") \
-   LESS_TERMCAP_md=$(printf "\e[1;31m") \
-   LESS_TERMCAP_me=$(printf "\e[0m") \
-   LESS_TERMCAP_se=$(printf "\e[0m") \
-   LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
-   LESS_TERMCAP_ue=$(printf "\e[0m") \
-   LESS_TERMCAP_us=$(printf "\e[1;32m") \
-   man "$@"
+  env \
+    LESS_TERMCAP_mb=$(printf "\e[1;31m") \
+    LESS_TERMCAP_md=$(printf "\e[1;31m") \
+    LESS_TERMCAP_me=$(printf "\e[0m") \
+    LESS_TERMCAP_se=$(printf "\e[0m") \
+    LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
+    LESS_TERMCAP_ue=$(printf "\e[0m") \
+    LESS_TERMCAP_us=$(printf "\e[1;32m") \
+    man "$@"
 }
 if [ -x "$(command -v unbuffered)" ]; then
- function less_with_unbuffer() {
-   unbuffered "$@" |& less -SR
- }
-   alias ul=less_with_unbuffer
+  function less_with_unbuffer() {
+    unbuffered "$@" |& less -SR
+  }
+  alias ul=less_with_unbuffer
 fi
 
 # * »»»» grep
@@ -315,10 +316,8 @@ alias ls='ls -F --color=auto --group-directories-first'
 
 
 # * »» prompt -----------------------------------------/
-#
+# [[
 
-# * »» prompt -----------------------------------------/
-#
 PROMPT="%d%(!,#,$) "
 RPROMPT="%n|%m|%w|%*"
 SPROMPT="%r is correct [n,y,a,e]: "
@@ -449,24 +448,26 @@ case "$TERM" in
       }
     fi
 
-    set_prompt_color() {
+    COLOR=${FOREGROUND_COLOR}${BACKGROUND_COLOR}
+
+    # ref. https://orebibou.com/ja/home/201810/20181002_001/
+    function update_prompt() {
       local exit_status=$?
       if [ $exit_status -eq 0 ]; then
         PROMPT_COLOR="${BLUE}"
       else
         PROMPT_COLOR="${RED}"
       fi
-    }
-
-    COLOR=${FOREGROUND_COLOR}${BACKGROUND_COLOR}
-    PS2="${USER_COLOR} %n ${COLOR}|${COLOR}%F{${GREEN}} %m ${COLOR}|${COLOR} %w ${COLOR}|${COLOR} %*${RESET}"
-
-    function prompt_update {
-      set_prompt_color
       PS1="${COLOR} $(get_formatted_directory_path)$(git_prompt) ${RESET}${PROMPT_COLOR}〉${RESET}"
+      local rp_id=$(whoami)
+      local rp_host=$(hostname -s)
+      local rp_date=$(date +"%a %d")
+      local rp_time=$(date "+%H:%M:%S")
+      local num=$(($COLUMNS - ${#rp_id} - ${#rp_host} - ${#rp_date} - ${#rp_time} - 10))
+      printf "%${num}s${USER_COLOR}${rp_id} ${COLOR}|${COLOR}${GREEN} ${rp_host} ${COLOR}|${COLOR} ${rp_date} ${COLOR}|${COLOR} ${rp_time}${RESET}\\r" ''
     }
 
-    PROMPT_COMMAND="prompt_update"
+    PROMPT_COMMAND=update_prompt
     ;;
   *)
     ;;
