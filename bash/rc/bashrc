@@ -45,7 +45,6 @@ export KCODE=u
 
 set -o vi
 bind '"jj":vi-movement-mode'
-bind -x '"\C-l": clear;'
 
 #shopt -s auto_pushd
 shopt -s autocd
@@ -218,6 +217,8 @@ if [ -x "$(command -v tmux)" ]; then
   alias ta='tmux a'
   alias tat='tmux a -t $1'
 fi
+
+bind -x '"\C-l": clear;update_prompt'
 
 alias ls='ls -F --color=auto --group-directories-first'
 alias cd='cd_func'
