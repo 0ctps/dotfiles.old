@@ -9,17 +9,18 @@ if ! type vim zsh git tmux cmake >/dev/null 2>&1;then
     sudo apt -y install vim zsh git tmux cmake build-essential avahi-daemon
     sudo systemctl start avahi-daemon
     sudo systemctl enable avahi-daemon
+  elif type yum >/dev/null 2>&1; then
+    sudo yum -y groupinstall "Development Tools"
+    sudo yum -y install vim zsh git tmux cmake kernel-devel kernel-headers avahi
+    sudo systemctl start avahi-daemon
+    sudo systemctl enable avahi-daemon
+  elif type pacman >/dev/null 2>&1; then
+    sudo pacman -Syu
+    sudo pacman -Sy vim zsh git tmux cmake base-devel avahi
   else
-    if type yum >/dev/null 2>&1; then
-      sudo yum -y groupinstall "Development Tools"
-      sudo yum -y install vim zsh git tmux cmake kernel-devel kernel-headers avahi
-      sudo systemctl start avahi-daemon
-      sudo systemctl enable avahi-daemon
-    else
-      echo "Your computer does not have Package Managers 'apt' or 'yum' installed. Please install the following packages manually and then re-run with the N option"
-      echo "Packages: vim, zsh, git, tmux, cmake, build-essential"
-      return 2>&- || exit
-    fi
+    echo "Your computer does not have Package Managers 'apt' , 'yum' or 'pacman' installed. Please install the following packages manually and then re-run with the N option"
+    echo "Packages: vim, zsh, git, tmux, cmake, build-essential"
+    return 2>&- || exit
   fi
 fi
 
